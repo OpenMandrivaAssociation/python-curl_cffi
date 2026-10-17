@@ -9,6 +9,7 @@ Source0:	https://files.pythonhosted.org/packages/source/c/curl_cffi/curl_cffi-%{
 Patch0:		curl_cffi-0.16.3-static-link.patch
 
 BuildRequires:	python
+BuildRequires:	pkgconfig(python3)
 BuildRequires:	python%{pyver}dist(setuptools)
 BuildRequires:	python%{pyver}dist(pip)
 BuildRequires:	python%{pyver}dist(cffi)
