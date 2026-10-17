@@ -48,7 +48,9 @@ pip wheel --wheel-dir ../RPMBUILD_wheels --no-deps --no-build-isolation --verbos
 # nounset trips rpm's install footer, which tests an unset DONT_CLEANUP.
 set -eo pipefail
 %py_install
-PYTHONPATH=%{buildroot}%{python_sitearch} python -c 'import curl_cffi; from curl_cffi import Curl; print(curl_cffi.__version__)'
+# -P keeps the unpacked source tree off sys.path. Without it, import
+# finds the in-tree package, which has no built _wrapper extension.
+PYTHONPATH=%{buildroot}%{python_sitearch} python -P -c 'import curl_cffi; from curl_cffi import Curl; print(curl_cffi.__version__)'
 
 %files
 %doc README.md
