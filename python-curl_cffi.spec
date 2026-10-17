@@ -34,10 +34,13 @@ test -f "$IMPERSONATE_BUILD_DIR/include/curl/curl.h"
 mkdir -p ../RPMBUILD_wheels
 # rpm exports RPM_OPT_FLAGS, not CFLAGS. The static archive is a
 # relocatable object, so drop -flto before the extension is linked.
+# --no-undefined rejects the Python symbols that the interpreter
+# provides when the module is loaded.
 CFLAGS="${CFLAGS:-$RPM_OPT_FLAGS}"
 LDFLAGS="${LDFLAGS:-$RPM_LD_FLAGS}"
 CFLAGS="${CFLAGS//-flto/}"
 LDFLAGS="${LDFLAGS//-flto/}"
+LDFLAGS="${LDFLAGS//-Wl,--no-undefined/}"
 export CFLAGS LDFLAGS
 pip wheel --wheel-dir ../RPMBUILD_wheels --no-deps --no-build-isolation --verbose .
 
