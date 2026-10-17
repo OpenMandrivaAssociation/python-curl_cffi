@@ -1,0 +1,25 @@
+--- curl_cffi-0.16.3/scripts/build.py
++++ curl_cffi-0.16.3/scripts/build.py
+@@ -107,6 +107,11 @@
+     if expected.exists():
+         print(f"libcurl-impersonate: {expected} already downloaded.")
+         return
++    raise RuntimeError(
++        f"{expected} is missing. Set IMPERSONATE_BUILD_DIR to the "
++        "curl-impersonate static tree; this build does not download "
++        "prebuilt binaries."
++    )
+ 
+     file = "libcurl-impersonate.tar.gz"
+     sysname = "linux-" + arch["libc"] if arch["system"] == "Linux" else arch["sysname"]
+@@ -205,6 +210,10 @@
+             "-Wl,--whole-archive",
+             static_libs[0],
+             "-Wl,--no-whole-archive",
++            "-lstdc++",
++            "-lm",
++            "-pthread",
++            "-ldl",
+         ]
+ 
+ libraries = get_curl_libraries()
