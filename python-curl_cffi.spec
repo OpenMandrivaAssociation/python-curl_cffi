@@ -31,13 +31,18 @@ export IMPERSONATE_BUILD_DIR=%{_libdir}/curl-impersonate
 test -f "$IMPERSONATE_BUILD_DIR/libcurl-impersonate.a"
 test -f "$IMPERSONATE_BUILD_DIR/include/curl/curl.h"
 mkdir -p ../RPMBUILD_wheels
-# libcurl-impersonate.a is a relocatable object, not LLVM bitcode.
+# rpm exports RPM_OPT_FLAGS, not CFLAGS. The static archive is a
+# relocatable object, so drop -flto before the extension is linked.
+CFLAGS="${CFLAGS:-$RPM_OPT_FLAGS}"
+LDFLAGS="${LDFLAGS:-$RPM_LD_FLAGS}"
 CFLAGS="${CFLAGS//-flto/}"
 LDFLAGS="${LDFLAGS//-flto/}"
+export CFLAGS LDFLAGS
 pip wheel --wheel-dir ../RPMBUILD_wheels --no-deps --no-build-isolation --verbose .
 
 %install
-set -euo pipefail
+# nounset trips rpm's install footer, which tests an unset DONT_CLEANUP.
+set -eo pipefail
 %py_install
 PYTHONPATH=%{buildroot}%{python_sitearch} python -c 'import curl_cffi; from curl_cffi import Curl; print(curl_cffi.__version__)'
 
